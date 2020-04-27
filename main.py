@@ -19,8 +19,6 @@ class Requests(object):
         #self.leave_time = wait_average
         #self.doing_time = int(1/doing_time)
 
-
-
     time_of_living = 0
     time_of_doing = 0
 
@@ -51,7 +49,6 @@ requests_in_queue, request_in_channels, requests_in_system = 0, 0, 0
 queues = 0
 iterations = 10000
 probabilities = [[0 for i in range(n + m + 2)] for j in range(end_time)]
-max_ = 0
 for i in range(iterations):
     queue = []
     channels = [None for j in range(n)]
@@ -118,15 +115,13 @@ print('среднее время обслуживания', time_in_channel/comp
 print('среднее время пребывания заявки в СМО', time_in_system/completed_requests)
 print('вероятность ухода из очереди', (trying_requests - denied_requests - completed_requests)/trying_requests)
 
-
 x = [i for i in range(len(probabilities))]
-
 for j in range(len(probabilities[0])):
     plot = [0 for i in range(len(probabilities))]
     for i in range(len(probabilities)):
         plot[i] = probabilities[i][j]/iterations
     pylab.plot(x, plot)
-
+pylab.show()
 
 for i in range(n + 1):
     print('предельная вероятность ', i, ' ', probabilities[-1][i]/iterations)
@@ -134,5 +129,5 @@ for i in range(m + 1):
     print('предельная вероятность ', n, '-', i, ' ', probabilities[-1][i + n] / iterations)
 print('предельная вероятность отказа', probabilities[-1][-1]/iterations)
 
-pylab.show()
+
 
