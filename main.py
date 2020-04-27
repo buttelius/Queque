@@ -65,16 +65,19 @@ for i in range(iterations):
         if time_to_next_left == 0:
             new_request = Requests(lmbd, wait_average, doing_time)
             trying_requests += 1
+            # если есть свободный канал, то на него
             if None in channels:
                 channels[channels.index(None)] = new_request
+            # иначе в очередь
             elif len(queue) < m:
                 queue.append(new_request)
+            # или вообще отказ
             else:
                 denied_requests += 1
                 probabilities[current_time][-1] += 1
             time_to_next_left = int(new_request.get_arrive())
         time_to_next_left -= 1
-        # уходят
+        # обновляем заявки в каналах
         doing = 0
         for item in channels:
             if item is not None:
@@ -86,20 +89,20 @@ for i in range(iterations):
                     completed_requests += 1
                     time_in_system += item.time_of_living
                     time_in_channel += item.time_of_doing
+        # записываем, была ли очередь и сколько где заявок
         if len(queue) > 0:
             queues += 1
         requests_in_queue += len(queue)
         request_in_channels += doing
         requests_in_system += len(queue) + doing
         probabilities[current_time][len(queue) + doing] += 1
-
+        # обновляем заявки в очереди
         for item in queue:
             item.living()
             if item.get_living() == item.get_leaving():
                 queue.remove(item)
                 time_in_system += item.time_of_living
                 time_in_queue += item.time_of_living
-
 
 print('интенсивность', trying_requests/(iterations*end_time))
 print('вероятность отсутсвия очереди', (end_time*iterations - queues)/(end_time*iterations))
@@ -114,6 +117,11 @@ print('среднее время ожидания в очереди', time_in_qu
 print('среднее время обслуживания', time_in_channel/completed_requests)
 print('среднее время пребывания заявки в СМО', time_in_system/completed_requests)
 print('вероятность ухода из очереди', (trying_requests - denied_requests - completed_requests)/trying_requests)
+for i in range(n + 1):
+    print('предельная вероятность ', i, ' ', probabilities[-1][i]/iterations)
+for i in range(m + 1):
+    print('предельная вероятность ', n, '-', i, ' ', probabilities[-1][i + n] / iterations)
+print('предельная вероятность отказа', probabilities[-1][-1]/iterations)
 
 x = [i for i in range(len(probabilities))]
 for j in range(len(probabilities[0])):
@@ -122,12 +130,5 @@ for j in range(len(probabilities[0])):
         plot[i] = probabilities[i][j]/iterations
     pylab.plot(x, plot)
 pylab.show()
-
-for i in range(n + 1):
-    print('предельная вероятность ', i, ' ', probabilities[-1][i]/iterations)
-for i in range(m + 1):
-    print('предельная вероятность ', n, '-', i, ' ', probabilities[-1][i + n] / iterations)
-print('предельная вероятность отказа', probabilities[-1][-1]/iterations)
-
 
 
