@@ -4,29 +4,20 @@ import matplotlib
 from matplotlib import pylab
 import numpy as np
 
-y = []
-x = []
-
 class Requests(object):
     def __init__(self, lmbd, wait_average, doing_time):
-        #self.arrive_time = math.ceil(math.log(random.random())/(-lmbd))
+        self.arrive_time = math.ceil(math.log(random.random())/(-lmbd))
         #self.arrive_time = math.ceil(np.random.exponential(1 / lmbd))
-        self.arrive_time = math.ceil(random.expovariate(lmbd))
-        #self.leave_time = math.ceil(random.expovariate(1/wait_average))
-        self.leave_time = math.ceil(np.random.exponential(1/wait_average))
+        #self.arrive_time = math.ceil(random.expovariate(lmbd))
+        self.leave_time = math.ceil(random.expovariate(1/wait_average))
+        #self.leave_time = math.ceil(np.random.exponential(wait_average))
         #self.leave_time = math.ceil(math.log(random.random()) / (-wait_average))
-        #self.doing_time = math.ceil(random.expovariate(1/doing_time))
-        self.doing_time = math.ceil(np.random.exponential(doing_time))
+        self.doing_time = math.ceil(random.expovariate(doing_time))
+        #self.doing_time = math.ceil(np.random.exponential(doing_time))
         #self.doing_time = math.ceil(math.log(random.random()) / (-doing_time))
         #self.arrive_time = int(1/lmbd)
         #self.leave_time = wait_average
         #self.doing_time = int(1/doing_time)
-        y_new = int((math.log(1- random.random()))/-lmbd)
-        if y_new in y:
-            x[y.index(y_new)] += 1
-        else:
-            y.append(y_new)
-            x.append(1)
 
 
 
@@ -58,7 +49,7 @@ trying_requests, completed_requests, denied_requests = 0, 0, 0
 time_in_system, time_in_queue, time_in_channel = 0, 0, 0
 requests_in_queue, request_in_channels, requests_in_system = 0, 0, 0
 queues = 0
-iterations = 1000
+iterations = 10000
 probabilities = [[0 for i in range(n + m + 2)] for j in range(end_time)]
 max_ = 0
 for i in range(iterations):
@@ -128,13 +119,13 @@ print('среднее время пребывания заявки в СМО', t
 print('вероятность ухода из очереди', (trying_requests - denied_requests - completed_requests)/trying_requests)
 
 
-#x = [i for i in range(len(probabilities))]
+x = [i for i in range(len(probabilities))]
 
 for j in range(len(probabilities[0])):
     plot = [0 for i in range(len(probabilities))]
     for i in range(len(probabilities)):
         plot[i] = probabilities[i][j]/iterations
-    #pylab.plot(x, plot)
+    pylab.plot(x, plot)
 
 
 for i in range(n + 1):
@@ -143,6 +134,5 @@ for i in range(m + 1):
     print('предельная вероятность ', n, '-', i, ' ', probabilities[-1][i + n] / iterations)
 print('предельная вероятность отказа', probabilities[-1][-1]/iterations)
 
-pylab.scatter(x, y)
 pylab.show()
 
